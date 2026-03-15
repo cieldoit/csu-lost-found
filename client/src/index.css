@@ -1,1 +1,57 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #026633;
+  --color-primary-dark: #014f26;
+  --color-secondary: #ffe100;
+  --color-accent: #ffe100;
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-slate-900 font-sans antialiased;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  input, textarea, select {
+    @apply outline-none transition-all duration-200 border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  button {
+    @apply cursor-pointer transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-slate-200 shadow-xl;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-6 rounded-xl border border-slate-200 shadow-sm transition-all;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all mb-4;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
