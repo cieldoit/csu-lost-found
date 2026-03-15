@@ -7,6 +7,7 @@ const {
   getRecentItems,
   getLostItems,
   getFoundItems,
+  searchItems,
   getItemById
 } = require("../controllers/itemController");
 
@@ -22,6 +23,7 @@ router.post(
 
 router.get("/", getItems);
 router.get("/recent", getRecentItems);
+router.get("/search", searchItems);
 router.get("/lost", getLostItems);
 router.get("/found", getFoundItems);
 router.get("/:id", getItemById);

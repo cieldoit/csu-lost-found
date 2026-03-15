@@ -1,18 +1,27 @@
 import { useState, useEffect } from "react";
 import API from "../api/api";
 import ItemCard from "../component/ItemCard";
-import { AlertCircle, Tag, Search } from "lucide-react";
+import SearchBar from "../component/SearchBar";
+import { AlertCircle, Tag, Filter } from "lucide-react";
 
 function LostItems() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     const fetchLostItems = async () => {
+      setLoading(true);
       try {
-        const res = await API.get("/items/lost");
+        const params = { type: "lost" };
+        if (query) params.q = query;
+        if (category) params.category = category;
+        if (status) params.status = status;
+
+        const res = await API.get("/items/search", { params });
         setItems(res.data);
       } catch (err) {
         console.error(err);
@@ -23,7 +32,11 @@ function LostItems() {
     };
 
     fetchLostItems();
-  }, []);
+  }, [query, category, status]);
+
+  const handleSearch = (searchQuery) => {
+    setQuery(searchQuery);
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto pb-12">
@@ -38,15 +51,39 @@ function LostItems() {
           </p>
         </div>
         
-        <div className="relative w-full lg:w-96 shrink-0 self-center lg:self-auto">
-          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search lost items..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-[15px] placeholder:font-medium placeholder:text-slate-400 text-slate-700"
-          />
+        <div className="flex flex-col gap-4 w-full lg:w-auto mt-6 lg:mt-0">
+          <SearchBar onSearch={handleSearch} placeholder="Search lost items..." />
+          <div className="flex gap-4 lg:self-end">
+            <div className="relative">
+              <select 
+                value={category} 
+                onChange={(e) => setCategory(e.target.value)}
+                className="pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 text-sm font-medium text-slate-700 appearance-none shadow-sm cursor-pointer"
+              >
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Personal Effects">Personal Effects</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Other">Other</option>
+              </select>
+              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
+            </div>
+
+            <div className="relative">
+              <select 
+                value={status} 
+                onChange={(e) => setStatus(e.target.value)}
+                className="pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 text-sm font-medium text-slate-700 appearance-none shadow-sm cursor-pointer"
+              >
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="claimed">Claimed</option>
+              </select>
+              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -71,13 +108,7 @@ function LostItems() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8">
-          {items
-            .filter(item => 
-              item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-              item.description?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-              item.locationLost?.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((item) => (
+          {items.map((item) => (
             <ItemCard key={item._id} item={item} />
           ))}
         </div>

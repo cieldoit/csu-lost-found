@@ -3,7 +3,6 @@ const Item = require("../models/Item");
 exports.createItem = async (req, res) => {
 
   try {
-
     const {
       title,
       description,
@@ -14,7 +13,7 @@ exports.createItem = async (req, res) => {
     } = req.body;
 
     const images = req.files?.map(file => file.path);
-
+    
     const item = await Item.create({
       title,
       description,
@@ -29,9 +28,7 @@ exports.createItem = async (req, res) => {
     res.status(201).json(item);
 
   } catch (error) {
-
     res.status(500).json({ error: error.message });
-
   }
 
 };
@@ -75,6 +72,31 @@ exports.getFoundItems = async (req, res) => {
     const items = await Item.find({ type: "found" })
       .populate("reportedBy", "fullName email")
       .sort({ createdAt: -1 });
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.searchItems = async (req, res) => {
+  try {
+    const { q, category, status, type } = req.query;
+    let query = {};
+
+    if (q) {
+      query.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } }
+      ];
+    }
+    if (category) query.category = category;
+    if (status) query.status = status;
+    if (type) query.type = type;
+
+    const items = await Item.find(query)
+      .populate("reportedBy", "fullName email")
+      .sort({ createdAt: -1 });
+
     res.json(items);
   } catch (error) {
     res.status(500).json({ error: error.message });
