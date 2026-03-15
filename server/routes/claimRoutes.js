@@ -4,13 +4,16 @@ const router = express.Router();
 const {
   createClaim,
   approveClaim,
-  rejectClaim
+  rejectClaim,
+  getClaims
 } = require("../controllers/claimController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
 
 router.post("/", authMiddleware, createClaim);
+
+router.get("/", authMiddleware, adminMiddleware, getClaims);
 
 router.put("/approve/:id", authMiddleware, adminMiddleware, approveClaim);
 

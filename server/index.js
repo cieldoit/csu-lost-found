@@ -3,6 +3,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const claimRoutes = require("./routes/claimRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 require("dotenv").config();
 
@@ -19,6 +20,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);
 app.use("/api/claims", claimRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("ASA Lost & Found API running");

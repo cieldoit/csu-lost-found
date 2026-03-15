@@ -1,5 +1,6 @@
 const Claim = require("../models/Claim");
 const Item = require("../models/Item");
+const Notification = require("../models/Notification");
 
 exports.createClaim = async (req, res) => {
   try {
@@ -50,6 +51,12 @@ exports.approveClaim = async (req, res) => {
       await item.save();
     }
 
+    // Create Notification
+    await Notification.create({
+      user: claim.claimant,
+      message: `Your claim for "${claim.item?.title || 'an item'}" has been approved.`
+    });
+
     res.json({ message: "Claim approved successfully", claim });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -60,7 +67,7 @@ exports.rejectClaim = async (req, res) => {
   try {
     const claimId = req.params.id;
 
-    const claim = await Claim.findById(claimId);
+    const claim = await Claim.findById(claimId).populate("item");
     if (!claim) {
       return res.status(404).json({ message: "Claim not found" });
     }
@@ -69,7 +76,26 @@ exports.rejectClaim = async (req, res) => {
     claim.status = "rejected";
     await claim.save();
 
+    // Create Notification
+    await Notification.create({
+      user: claim.claimant,
+      message: `Your claim for "${claim.item?.title || 'an item'}" has been rejected. Please provide stronger proof of ownership.`
+    });
+
     res.json({ message: "Claim rejected successfully", claim });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getClaims = async (req, res) => {
+  try {
+    const claims = await Claim.find()
+      .populate("item")
+      .populate("claimant", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json(claims);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

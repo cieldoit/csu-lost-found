@@ -7,6 +7,7 @@ import ReportFound from "./pages/ReportFound";
 import LostItems from "./pages/LostItems";
 import FoundItems from "./pages/FoundItems";
 import ItemDetail from "./pages/ItemDetail";
+import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./component/ProtectedRoute";
 import Layout from "./layouts/Layout";
 
@@ -58,6 +59,13 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <ItemDetail />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <Layout>
+              <AdminDashboard />
             </Layout>
           </ProtectedRoute>
         } />

@@ -48,8 +48,8 @@ exports.getRecentItems = async (req, res) => {
   try {
     const items = await Item.find()
       .populate("reportedBy", "fullName email")
-      .sort({ createdAt: -1 })
-      .limit(6);
+      .sort({ updatedAt: -1 })
+      .limit(10);
     res.json(items);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -108,6 +108,18 @@ exports.getItemById = async (req, res) => {
     const item = await Item.findById(req.params.id)
       .populate("reportedBy", "fullName");
     res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getAllItemsAdmin = async (req, res) => {
+  try {
+    const items = await Item.find()
+      .populate("reportedBy", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json(items);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

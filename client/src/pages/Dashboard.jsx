@@ -3,31 +3,26 @@ import { Link } from "react-router-dom";
 import { PlusCircle, Search, Clock, CheckCircle, AlertTriangle, ArrowRight, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import API from "../api/api";
-import ItemCard from "../component/ItemCard";
+import RecentItems from "../component/RecentItems";
 
 function Dashboard() {
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
   const [stats, setStats] = useState({ lost: 0, found: 0, claimed: 0 });
-  const [recentItems, setRecentItems] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
        try {
          const res = await API.get("/items/recent", { headers: { Authorization: `Bearer ${token}` }});
          const items = res.data;
-         setRecentItems(items);
          
          // Mock stats derived from recent items for visual feedback
          const lostCount = items.filter(i => i.type === 'lost').length;
          const foundCount = items.filter(i => i.type === 'found').length;
          setStats({ lost: lostCount, found: foundCount, claimed: 0 });
          
-         setLoading(false);
        } catch (error) {
          console.error("Failed to fetch dashboard data", error);
-         setLoading(false);
        }
     };
 
@@ -82,45 +77,15 @@ function Dashboard() {
         ))}
       </div>
 
-      {/* Recent Items Section */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-slate-800">Recent Reports</h2>
-          <button className="text-primary font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-            View All <ArrowRight size={18} />
-          </button>
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        {/* Recent Items Module */}
+        <div className="w-full">
+          <RecentItems />
         </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-64 bg-slate-100 rounded-3xl animate-pulse"></div>
-            ))}
-          </div>
-        ) : recentItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {recentItems.map((item) => (
-              <ItemCard key={item._id} item={item} />
-            ))}
-          </div>
-        ) : (
-          <div className="glass-card p-12 rounded-3xl text-center flex flex-col items-center justify-center group animate-fade-in">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-              <Package size={40} className="text-slate-300" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">No items reported yet</h3>
-            <p className="text-slate-500 max-w-xs mx-auto mb-8">
-              Keep track of your lost and found belongings by reporting them here.
-            </p>
-            <Link to="/report-lost" className="text-primary font-bold border-b-2 border-primary/20 hover:border-primary transition-all pb-1">
-              Start by reporting a lost item
-            </Link>
-          </div>
-        )}
       </div>
 
       {/* Quick Tips / Info Section */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-10 text-white relative overflow-hidden">
+      <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-10 text-white relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
           <h2 className="text-3xl font-bold mb-4">How to recover items faster?</h2>
           <p className="text-slate-300 text-lg mb-8 leading-relaxed">

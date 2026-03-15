@@ -8,10 +8,12 @@ const {
   getLostItems,
   getFoundItems,
   searchItems,
-  getItemById
+  getItemById,
+  getAllItemsAdmin
 } = require("../controllers/itemController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
 router.post(
@@ -24,6 +26,7 @@ router.post(
 router.get("/", getItems);
 router.get("/recent", getRecentItems);
 router.get("/search", searchItems);
+router.get("/admin", authMiddleware, adminMiddleware, getAllItemsAdmin);
 router.get("/lost", getLostItems);
 router.get("/found", getFoundItems);
 router.get("/:id", getItemById);
