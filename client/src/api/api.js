@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://csu-lost-found-api.onrender.com"
+  baseURL: "https://csu-lost-found-api.onrender.com/api"
 });
 
 // Add a request interceptor to include the auth token in every request
