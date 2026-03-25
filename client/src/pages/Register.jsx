@@ -95,7 +95,7 @@ function Register() {
         role: form.role
       };
       
-      const res = await API.post("/api/auth/register", payload);
+      const res = await API.post("/auth/register", payload);
       if (res.status === 201) {
         toast.success("Registration successful! Please sign in.");
         navigate("/login");
