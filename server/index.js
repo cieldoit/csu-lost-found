@@ -1,3 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+
+// Ensure uploads folder exists on the server
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
